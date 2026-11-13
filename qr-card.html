@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>QR card · Adriana &amp; Non · Mahassajan</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Pinyon+Script&family=Prompt:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Prompt',sans-serif;font-weight:300;background:#EDE6E7;color:#5C4148;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A5 portrait;margin:0}
+.bar{text-align:center;padding:12px;background:#5C4148;color:#fff;font-size:13px}
+.bar button{font-family:'Prompt';border:0;border-radius:999px;padding:8px 20px;margin-right:8px;cursor:pointer;color:#5C4148}
+.card{width:148mm;height:210mm;margin:16px auto;background:#FBF8F6;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14mm 12mm 0;text-align:center;box-shadow:0 6px 30px rgba(92,65,72,.15);overflow:hidden}
+.card .logo{height:20px}
+.ey{font-family:'Josefin Sans';letter-spacing:.32em;font-size:9.5px;text-transform:uppercase;color:#9C7880;margin-top:9mm}
+h1{font-family:'Pinyon Script',cursive;font-weight:400;font-size:60px;line-height:1.15;color:#5C4148}
+h1 span{color:#A0785A;font-size:.6em;padding:0 .1em}
+.when{font-family:'Josefin Sans';letter-spacing:.24em;font-size:10px;text-transform:uppercase}
+.where{font-size:11px;color:#8A7A7E;margin-top:2px}
+.qr{width:72mm;margin:7mm auto 0;background:#fff;border-radius:18px;padding:3mm;box-shadow:0 8px 24px rgba(156,120,128,.14)}
+.cta{margin-top:6mm;font-size:15px;font-weight:400}
+.cta small{display:block;font-family:'Josefin Sans';letter-spacing:.26em;font-size:9.5px;color:#9C7880;margin-top:3px}
+.foot{width:calc(100% + 24mm);background:#C9A8AF;padding:7mm 0 6mm;margin-top:8mm}
+.foot img{height:22px;margin:0 auto}
+@media print{body{background:#fff}.bar{display:none}.card{margin:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="bar"><button onclick="window.print()">🖨 พิมพ์ / บันทึก PDF</button>การ์ด QR ขนาด A5 สำหรับตั้งโต๊ะลงทะเบียน</div>
+<div class="card">
+  <div>
+    <img class="logo" src="img/logo-mauve.png" alt="Mahassajan">
+    <div class="ey">The Wedding Celebration of</div>
+    <h1>Adriana<span>&amp;</span>Non</h1>
+    <div class="when">Sunday · 15 November 2026</div>
+    <div class="where">Thames Valley Khao Yai</div>
+    <img class="qr" src="img/qr-site.png" alt="QR to the guest page">
+    <div class="cta">สแกนเพื่อค้นหาที่นั่งของคุณ<small>SCAN TO FIND YOUR SEAT</small></div>
+  </div>
+  <div class="foot"><img src="img/logo-white.png" alt="Mahassajan"></div>
+</div>
+</body>
+</html>
