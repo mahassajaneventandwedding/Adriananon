@@ -8,3 +8,4 @@ Made by Mahassajan Wedding Planner.
 - Printable seating plan + guest list: `print.html` (Print → Save as PDF)
 - Guest data: `data.js` (built from the couple's Excel files)
 - QR card (A5 / PNG): `qr-card.html`, `img/qr-card.png`
+- Name cards for plates (A4, 8 per page): `name-cards.html`

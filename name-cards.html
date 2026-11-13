@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Name cards · Adriana &amp; Non · Mahassajan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Taviraj:wght@300;400&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--taupe:#8A786A;--ink:#4E443D;--line:#B9AA9D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9E4DF;font-family:'Cormorant Garamond','Taviraj',serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4 portrait;margin:0}
+.bar{position:sticky;top:0;z-index:3;background:#5C4148;color:#fff;text-align:center;padding:12px;font-family:'Taviraj',serif;font-size:14px}
+.bar button{font-family:'Taviraj';font-size:14px;border:0;border-radius:999px;padding:8px 20px;margin-right:10px;cursor:pointer;color:#5C4148}
+.page{width:210mm;height:297mm;margin:16px auto;background:#fff;display:grid;grid-template-columns:105mm 105mm;grid-template-rows:repeat(4,74.25mm);position:relative;box-shadow:0 6px 30px rgba(0,0,0,.12)}
+@media print{body{background:#fff}.bar{display:none}.page{margin:0;box-shadow:none;break-after:page}.page:last-child{break-after:auto}}
+.cell{position:relative;display:flex;align-items:center;justify-content:center}
+/* faint cell guides at the page grid */
+.cell::after{content:"";position:absolute;inset:0;border-right:.2mm dotted #E3DCD5;border-bottom:.2mm dotted #E3DCD5;pointer-events:none}
+.card{position:relative;width:95mm;height:64mm;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5mm 6mm 4mm}
+.card svg.cut{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.card .cut .o{fill:none;stroke:var(--line);stroke-width:.25}
+.card .cut .i{fill:none;stroke:#D8CEC5;stroke-width:.18}
+.logo{width:34mm;position:relative}
+.name{position:relative;margin-top:4mm;font-size:28pt;line-height:1.15;font-weight:500;color:var(--ink);white-space:nowrap;letter-spacing:.01em}
+.name.th{font-family:"Taviraj",serif;font-weight:400;font-size:26pt}
+.rule{position:relative;width:16mm;height:.25mm;background:var(--line);margin-top:3mm}
+.meta{position:relative;margin-top:2.2mm;font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:6.6pt;letter-spacing:.28em;color:var(--taupe);text-transform:uppercase}
+.seat{position:absolute;right:7mm;bottom:4.2mm;font-family:'Josefin Sans',sans-serif;font-size:5.6pt;letter-spacing:.12em;color:#B4A79B}
+.seat.x{color:#C0703F}
+</style>
+</head>
+<body>
+<div class="bar"><button onclick="window.print()">🖨 พิมพ์ / บันทึก PDF</button><span id="info"></span> · A4 หน้าละ 8 ใบ · ตัดตามเส้นมุมตัด · ตั้งค่าพิมพ์ Scale 100% (Actual size)</div>
+<div id="pages"></div>
+<script src="data.js"></script>
+<script>
+const D = window.SEAT_DATA;
+const T = Object.fromEntries(D.tables.map(t=>[t.id,t]));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* one card per seat (family groups get one card per chair) + extra chairs pending the hotel; ceremony-only names have no dinner plate */
+const cards=[];
+D.guests.forEach(g=>{
+  if(!g.table) return;
+  if(g.seats.length) g.seats.forEach(s=>cards.push({name:g.name,zone:T[g.table].zone,seat:s,key:s}));
+  else cards.push({name:g.name,zone:T[g.table].zone,seat:null,key:Math.max(...T[g.table].left,...T[g.table].right)+0.5,extra:true});
+});
+cards.sort((a,b)=>a.key-b.key);
+document.getElementById('info').textContent=`${cards.length} ใบ · ${Math.ceil(cards.length/8)} หน้า`;
+const isThai=s=>/[฀-๿]/.test(s);
+const cut=`<svg class="cut" viewBox="0 0 95 64" preserveAspectRatio="none"><polygon class="o" points="6,0 89,0 95,6 95,58 89,64 6,64 0,58 0,6"/><polygon class="i" points="8,2.2 87,2.2 92.8,8 92.8,56 87,61.8 8,61.8 2.2,56 2.2,8"/></svg>`;
+const pages=document.getElementById('pages');
+for(let i=0;i<cards.length;i+=8){
+  const pg=document.createElement('section');pg.className='page';
+  pg.innerHTML=cards.slice(i,i+8).map(c=>`<div class="cell"><div class="card">${cut}
+    <img class="logo" src="img/couple-logo-taupe.png" alt="Adriana & Non">
+    <div class="name${isThai(c.name)?' th':''}">${esc(c.name)}</div>
+    <div class="rule"></div>
+    <div class="meta">15 · 11 · 2026 · Thames Valley Khao Yai</div>
+    <div class="seat${c.extra?' x':''}">${c.extra?'Z'+c.zone+' · เสริม':'Z'+c.zone+' · '+c.seat}</div>
+  </div></div>`).join('');
+  pages.appendChild(pg);
+}
+/* shrink long names to fit the card */
+function fit(){document.querySelectorAll('.name').forEach(n=>{let fs=parseFloat(getComputedStyle(n).fontSize);const max=n.parentElement.clientWidth*0.86;while(n.scrollWidth>max&&fs>10){fs-=0.5;n.style.fontSize=fs+'px';}});}
+(document.fonts?document.fonts.ready:Promise.resolve()).then(fit);
+</script>
+</body>
+</html>
