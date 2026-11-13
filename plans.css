@@ -1,0 +1,35 @@
+/* shared SVG plan styles (index.html + print.html) */
+:root{--mauve:#C9A8AF;--mauve-deep:#9C7880;--plum:#5C4148;--muted:#8A7A7E;--accent:#A0785A}
+.lawn{fill:#E4EBDA;stroke:#C9D5BC;stroke-width:1.5}
+.water{fill:none;stroke:#D3E3E6;stroke-width:30;stroke-linecap:round}
+.water-lbl{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;fill:#6E8C93;text-anchor:middle}
+.feat{fill:#fff;stroke:#D8C6CA;stroke-width:1}
+.feat.entry{fill:#F6EEE6;stroke:var(--accent)}
+.f-en{font-family:'Josefin Sans';font-size:11px;letter-spacing:.06em;fill:var(--plum);text-anchor:middle}
+.f-th{font-family:'Prompt';font-size:9.5px;fill:var(--muted);text-anchor:middle}
+.stage{fill:#EAD8DC;stroke:var(--mauve-deep);stroke-width:1.2}
+.st-en{font-family:'Josefin Sans';font-size:12px;letter-spacing:.2em;fill:var(--plum);text-anchor:middle}
+.st-th{font-family:'Prompt';font-size:11px;fill:var(--plum);text-anchor:middle}
+.buffet{fill:#EFE6D3;stroke:#C9B48E;stroke-width:1}
+.zone-box{fill:#F7F1EE;stroke:#DCCBCF;stroke-width:1.2}
+.zone-lbl{font-family:'Josefin Sans';font-size:13px;letter-spacing:.24em;fill:var(--mauve-deep);text-anchor:middle}
+.tb{fill:#fff;stroke:#BFA9AE;stroke-width:1}
+.tb-name{font-family:'Prompt';font-size:12px;fill:var(--plum);text-anchor:middle}
+.tb-sub{font-family:'Josefin Sans';font-size:10px;fill:var(--muted);text-anchor:middle}
+.ch{fill:#fff;stroke:#CDB8BD;stroke-width:1}
+.ch.taken{fill:#E6D3D7;stroke:#CDB0B7}
+.ch-n{font-family:'Josefin Sans';font-size:6.5px;fill:#9E888D;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.tg.dim{opacity:.35}
+.tg.hl .tb{fill:var(--plum);stroke:var(--plum)}
+.tg.hl .ch.taken{fill:var(--mauve);stroke:var(--mauve-deep)}
+.tg.hl .ch-n{fill:#fff}
+.tg.hl .tb-name{font-weight:500}
+.ring{fill:none;stroke:var(--mauve-deep);stroke-width:1.4;stroke-dasharray:4 3}
+.cc{fill:#fff;stroke:#CDB8BD;stroke-width:1}
+.cc.taken{fill:#E6D3D7;stroke:#CDB0B7}
+.aisle{stroke:var(--mauve-deep);stroke-width:1.2;stroke-dasharray:5 4}
+.row-n{font-family:'Josefin Sans';font-size:10px;fill:var(--mauve-deep);text-anchor:middle}
+.me-seat{fill:var(--accent);stroke:#fff;stroke-width:1.5}
+.pulse{fill:none;stroke:var(--accent);stroke-width:1.6;animation:pulse 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(3.2)}}
+
