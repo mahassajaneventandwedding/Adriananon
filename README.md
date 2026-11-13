@@ -7,3 +7,4 @@ Made by Mahassajan Wedding Planner.
 - Staff mode (export button): add `#staff` to the link
 - Printable seating plan + guest list: `print.html` (Print → Save as PDF)
 - Guest data: `data.js` (built from the couple's Excel files)
+- QR card (A5 / PNG): `qr-card.html`, `img/qr-card.png`

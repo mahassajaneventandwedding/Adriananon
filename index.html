@@ -102,6 +102,10 @@ section{padding:64px 0}
 .chip strong.th{font-family:'Prompt';font-size:21px;font-weight:400;line-height:1.1;padding-top:2px}
 .seat-desc{text-align:center;color:var(--muted);font-size:13.5px;line-height:1.55}
 .none{text-align:center;color:var(--muted);font-size:13.5px;padding:6px 4px}
+.pending{display:none;margin-top:10px;background:#FFF4EC;border:1px dashed #D9A07C;color:#9A4E27;border-radius:12px;padding:9px 12px;font-size:13px;text-align:center}
+.tbc{display:inline-block;font-size:11px;font-family:'Josefin Sans';letter-spacing:.1em;background:#FFF4EC;color:#9A4E27;border:1px solid #EBC3A8;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:3px}
+.mates li.xtra{border:1px dashed #D9A07C;background:#FFF8F2}
+.mates li.xtra b{background:#E9B898}
 .staff-note{display:none;margin-top:12px;background:#FFF6EF;border:1px solid #F1D9C6;color:#8A4D2C;border-radius:12px;padding:10px 14px;font-size:13.5px}
 .tabs{display:flex;background:var(--blush);border-radius:999px;padding:4px;margin:14px 0 12px}
 .tabs button{flex:1;border:0;background:transparent;border-radius:999px;padding:9px 6px;font-family:'Prompt';font-size:14px;color:var(--plum);cursor:pointer;font-weight:300}
@@ -279,7 +283,7 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
           </div>
           <div class="seat-desc" id="c-desc"></div>
         </div>
-        <div class="none" id="cer-no">พิธีในสวน: ทีมงาน Mahassajan จะดูแลพาไปที่นั่งหน้างานค่ะ<br><small>Our team will guide you to your ceremony seat.</small></div>
+        <div class="none" id="cer-no">พิธีในสวนเป็นที่นั่งอิสระ เชิญนั่งในที่นั่งที่ว่างได้เลยค่ะ<br><small>Open seating — please take any available seat for the ceremony.</small></div>
       </div>
 
       <div class="part" id="p-rec">
@@ -290,6 +294,8 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
           <div class="chip a" id="r-seat-chip"><small>Seat · ที่นั่ง</small><strong id="r-seat"></strong></div>
         </div>
         <div class="seat-desc" id="r-desc"></div>
+        <div class="pending" id="r-pending">ที่นั่งเสริม · รอโรงแรมอัปเดตเลขที่นั่ง<br><small>Extra seat — the hotel will confirm your seat number.</small></div>
+        <div class="pending" id="r-tbc">ชื่อนี้มีมากกว่า 1 ท่าน · TBC รอบ่าวสาวยืนยันอีกครั้ง</div>
       </div>
       <div class="staff-note" id="r-note"></div>
 
@@ -301,7 +307,7 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
       <div id="tab-cer"><div class="plan-box" id="cer-box"></div>
         <div class="legend"><span><i style="background:var(--accent)"></i>ที่นั่งของคุณ · Your seat</span><span><i style="background:#EAD8DC;border-radius:2px"></i>เวทีบ่าวสาว</span></div></div>
       <div id="tab-rec"><div class="plan-box" id="rec-box"></div>
-        <div class="legend"><span><i style="background:var(--accent)"></i>ที่นั่งของคุณ · Your seat</span><span><i style="background:var(--plum)"></i>โต๊ะของคุณ · Your table</span></div></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>ที่นั่งของคุณ · Your seat</span><span><i style="background:var(--plum)"></i>โต๊ะของคุณ · Your table</span><span><i style="background:#FBEDE4;border:1px dashed #C8734A"></i>เก้าอี้เสริม (รอโรงแรม)</span></div></div>
       <div id="tab-mates"><ul class="mates" id="mates"></ul></div>
     </div>
   </div>
@@ -438,7 +444,7 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
       </div>
 
       <!-- VENUE -->
-      <a class="card wide" href="https://www.google.com/maps/search/?api=1&amp;query=Thames+Valley+Khao+Yai" target="_blank" rel="noopener">
+      <a class="card wide" href="https://maps.app.goo.gl/JxZa1kHpoYmCUpKm7" target="_blank" rel="noopener">
         <div class="k">Wedding venue · สถานที่จัดงาน</div>
         <h4>Thames Valley Khao Yai</h4>
         <p>โรงแรมเทมส์ วัลลีย์ เขาใหญ่ ประเทศไทย</p>
@@ -505,7 +511,7 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
 </script>
 
 <script>
-const {D, TBY, el, buildVenue, buildCeremony, seatPos, seatSide, seatIndex, seatList, cerPos, cerInfo, VIEW} = window.PLAN;
+const {D, TBY, el, extraPos, buildVenue, buildCeremony, seatPos, seatSide, seatIndex, seatList, cerPos, cerInfo, VIEW} = window.PLAN;
 const STAFF = location.hash==='#staff';
 if(STAFF) document.body.classList.add('staff');
 window.addEventListener('hashchange',()=>document.body.classList.toggle('staff',location.hash==='#staff'));
@@ -526,7 +532,7 @@ function seatText(seats){
 }
 function where(g){
   const t=TBY[g.table]; if(!t) return '';
-  return 'Zone '+t.zone+(t.zone==='1'?' · '+t.label:'')+(g.seats.length?' · ที่ '+seatText(g.seats):'');
+  return 'Zone '+t.zone+(t.zone==='1'?' · '+t.label:'')+(g.seats.length?' · ที่ '+seatText(g.seats):(g.extra?' · เสริม':''));
 }
 
 /* search */
@@ -545,7 +551,7 @@ q.addEventListener('input',()=>{
     const li=document.createElement('li'),b=document.createElement('button');
     const sub=g.table?(TBY[g.table].zone==='1'?'งานเลี้ยง · สนามหญ้า':'งานเลี้ยง · Zone '+TBY[g.table].zone):'พิธีแลกคำมั่นสัญญา';
     const tag=g.table?where(g).replace(' · ที่ ',' · #'):'พิธี · '+cerInfo(g.cer).sideTh+' แถว '+cerInfo(g.cer).row;
-    b.innerHTML=`<span>${esc(g.name)}<span class="sub">${esc(sub)}</span></span><span class="tag">${esc(tag)}</span>`;
+    b.innerHTML=`<span>${esc(g.name)}${g.tbc?'<span class="tbc">TBC</span>':''}<span class="sub">${esc(sub)}</span></span><span class="tag">${esc(tag)}</span>`;
     b.onclick=()=>{list.innerHTML='';show(g);};
     li.appendChild(b);list.appendChild(li);
   });
@@ -554,7 +560,7 @@ clearBtn.onclick=()=>{q.value='';q.dispatchEvent(new Event('input'));q.focus();}
 
 function show(g){
   const $=id=>document.getElementById(id);
-  $('r-name').textContent=g.name;
+  $('r-name').innerHTML=esc(g.name)+(g.tbc?'<span class="tbc">TBC</span>':'');
 
   /* ceremony */
   const meC=cerSvg.getElementById('me-cer');meC.innerHTML='';
@@ -576,9 +582,11 @@ function show(g){
     $('r-row-chip').style.display=t.zone==='1'?'':'none';
     $('r-row').textContent=t.zone==='1'?t.label.replace('แถว ',''):'';
     const st=seatText(g.seats);
-    $('r-seat-chip').style.display=st?'':'none';$('r-seat').textContent=st;$('r-seat').style.fontSize=st.length>5?'18px':'';
+    $('r-seat-chip').style.display=(st||g.extra)?'':'none';$('r-seat').textContent=st||'เสริม';$('r-seat').style.fontSize=(st.length>5||!st)?'18px':'';
+    $('r-pending').style.display=g.extra?'block':'none';$('r-tbc').style.display=g.tbc?'block':'none';
     let d;
-    if(!g.seats.length) d='ยังไม่ได้ระบุเลขที่นั่ง ทีมงานจะพาไปที่นั่งหน้างานค่ะ';
+    if(g.extra){const side=g.extra==='L'?'ซ้าย':'ขวา';d=t.zone==='1'?`โต๊ะยาว ${t.label} บนสนามหญ้า · ฝั่ง${side} (เมื่อหันหน้าเข้าเวที) เก้าอี้เสริมท้ายโต๊ะ`:`Zone ${t.zone} · ${t.label} · เก้าอี้เสริมฝั่ง${side}`;}
+    else if(!g.seats.length) d='ยังไม่ได้ระบุเลขที่นั่ง ทีมงานจะพาไปที่นั่งหน้างานค่ะ';
     else if(t.zone==='1'){
       const sides=[...new Set(g.seats.map(s=>seatSide(t,s)==='L'?'ซ้าย':'ขวา'))], pos=[...new Set(g.seats.map(s=>seatIndex(t,s)))].sort((a,b)=>a-b);
       d=`โต๊ะยาว ${t.label} บนสนามหญ้า · ฝั่ง${sides.join('และ')} (เมื่อหันหน้าเข้าเวที) ตัวที่ ${pos.join(', ')} นับจากฝั่งเวที`;
@@ -587,9 +595,10 @@ function show(g){
     recSvg.setAttribute('viewBox',VIEW[t.zone]);
     g.seats.forEach(s=>{const[x,y]=seatPos(t,s);el('circle',{cx:x,cy:y,r:7,class:'pulse'},meR);el('circle',{cx:x,cy:y,r:8,class:'me-seat'},meR);
       el('text',{x,y:y+0.5,class:'ch-n',style:'fill:#fff;font-size:7px'},meR,s);});
+    if(g.extra){const[x,y]=extraPos(g);el('circle',{cx:x,cy:y,r:7,class:'pulse'},meR);el('circle',{cx:x,cy:y,r:8,class:'me-seat'},meR);el('text',{x,y:y+0.5,class:'ch-n',style:'fill:#fff;font-size:8px'},meR,'+');}
   }
   const note=$('r-note');
-  if(STAFF){const n=[];if(t&&!g.seats.length)n.push('ไม่มีเลขที่นั่งงานเลี้ยงในไฟล์ (เกินจำนวนที่นั่งของโต๊ะ)');if(!t)n.push('มีชื่อเฉพาะในผังพิธี ไม่พบในไฟล์งานเลี้ยง');if(g.alias.length)n.push('ชื่อในผังพิธี: '+g.alias.join(', '));
+  if(STAFF){const n=[];if(g.extra)n.push('เก้าอี้เสริม รอโรงแรมเพิ่มที่นั่ง');if(!t)n.push('มีชื่อเฉพาะในผังพิธี ไม่พบในไฟล์งานเลี้ยง');if(g.alias.length)n.push('ชื่อในผังพิธี: '+g.alias.join(', '));
     note.style.display=n.length?'block':'none';note.textContent='สำหรับทีมงาน · '+n.join(' · ');}else note.style.display='none';
 
   /* mates */
@@ -597,7 +606,7 @@ function show(g){
   const tabM=document.querySelector('[data-tab="mates"]');tabM.style.display=t?'':'none';
   if(t){
     const bySeat={};D.guests.filter(x=>x.table===g.table).forEach(x=>x.seats.forEach(s=>bySeat[s]=x));
-    $('r-count').textContent=`${Object.keys(bySeat).length} / ${t.cap} ที่นั่ง`;
+    const nx=t.extraL.length+t.extraR.length;$('r-count').textContent=`${Object.keys(bySeat).length} / ${t.cap} ที่นั่ง`+(nx?` +${nx} เสริม`:'');
     [['ฝั่งซ้าย · Left',t.left],['ฝั่งขวา · Right',t.right]].forEach(([h,arr])=>{
       const hd=document.createElement('li');hd.className='side-h';hd.textContent=h;mates.appendChild(hd);
       arr.forEach(s=>{const x=bySeat[s],li=document.createElement('li');
@@ -605,7 +614,7 @@ function show(g){
         else{li.className='vacant';li.innerHTML=`<b style="background:#E8DADD">${s}</b><span>ว่าง</span>`;}
         mates.appendChild(li);});
     });
-    D.guests.filter(x=>x.table===g.table&&!x.seats.length).forEach(x=>{const li=document.createElement('li');if(x===g)li.className='me';li.innerHTML=`<b>·</b><span>${esc(x.name)} <small>(ยังไม่มีเลขที่นั่ง)</small></span>`;mates.appendChild(li);});
+    D.guests.filter(x=>x.table===g.table&&!x.seats.length).forEach(x=>{const li=document.createElement('li');li.className=x===g?'me xtra':'xtra';li.innerHTML=`<b>+</b><span>${esc(x.name)} <small>เก้าอี้เสริม · รอโรงแรมอัปเดต</small></span>`;mates.appendChild(li);});
   }
   document.querySelector('[data-tab="cer"]').style.display=g.cer?'':'none';
   setTab(g.cer?'cer':'rec');

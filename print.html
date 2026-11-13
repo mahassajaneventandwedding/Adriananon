@@ -73,6 +73,9 @@ body{font-family:'Prompt',sans-serif;font-weight:300;color:var(--ink);background
 .lt .no{display:flex;align-items:center;justify-content:center}
 .lt .no b{display:grid;place-items:center;width:5.4mm;height:5.4mm;border-radius:50%;background:#EBDCE0;font-family:'Josefin Sans';font-weight:400;font-size:7.5px;color:var(--plum)}
 .lt .no.v b{background:#fff;border:1px dashed #D5C3C7;color:#B9AAAD}
+.lt .nm.x{color:#9A4E27;font-weight:400}
+.lt .no.x b{background:#FBEDE4;border:1px dashed #C8734A;color:#A8552F}
+.tbcp{font-family:'Josefin Sans';font-size:7.5px;color:#9A4E27;border:1px solid #EBC3A8;border-radius:6px;padding:0 3px;background:#FFF4EC}
 .lt .tbl{background:#F4ECEE;border:1px solid #D7C3C8;border-radius:3px}
 .lt .extra{font-size:9px;color:#A8552F;margin-top:3px;text-align:center}
 .z1 .grid{grid-auto-rows:9.6mm}
@@ -163,20 +166,24 @@ page('ผังที่นั่งพิธีแลกคำมั่นส�
   <div class="stage"><b>STAGE</b><small>เวทีบ่าวสาว</small></div>
   <div class="side-h"><span></span><span>ฝั่งซ้าย<small>Left · L01 (ริมนอก) → L06 (ติดทางเดิน)</small></span><span></span><span>ฝั่งขวา<small>Right · R01 (ติดทางเดิน) → R06 (ริมนอก)</small></span></div>
   <div class="cer">${cg}</div>
-  <div class="note">ทางเดินบ่าวสาวอยู่ตรงกลางระหว่างฝั่งซ้ายและขวา · ข้อมูลจากไฟล์ seat.xlsx (${cerCount} ชื่อ จาก ${CER_CODES.length} ที่นั่ง)</div>`);
+  <div class="note">ทางเดินบ่าวสาวอยู่ตรงกลางระหว่างฝั่งซ้ายและขวา · แขกที่ไม่มีชื่อในผังพิธี นั่งได้อิสระในที่นั่งว่าง · ข้อมูลจากไฟล์ seat.xlsx (${cerCount} ชื่อ จาก ${CER_CODES.length} ที่นั่ง)</div>`);
 
 /* ---------- long-table renderer ---------- */
 function ltHTML(t,title){
-  const n=t.rows;let g='';
-  for(let i=0;i<n;i++){
-    const ls=t.left[i],rs=t.right[i],lg=bySeat[ls],rg=bySeat[rs];
-    const L=ls==null?'<div></div><div></div>':`<div class="nm l${lg?'':' v'}">${lg?esc(lg.name):'ว่าง'}</div><div class="no${lg?'':' v'}"><b>${ls}</b></div>`;
-    const R=rs==null?'<div></div><div></div>':`<div class="no${rg?'':' v'}"><b>${rs}</b></div><div class="nm r${rg?'':' v'}">${rg?esc(rg.name):'ว่าง'}</div>`;
-    g+=L+(i===0?`<div class="tbl" style="grid-row:1/span ${n};grid-column:3"></div>`:'')+R;
-  }
-  const extra=D.guests.filter(x=>x.table===t.id&&!x.seats.length).map(x=>esc(x.name));
-  const all=[...t.left,...t.right];
-  return `<div class="lt"><h4>${title}<small>ที่ ${Math.min(...all)}–${Math.max(...all)} · ${t.cap} ที่นั่ง</small></h4><div class="grid">${g}</div>${extra.length?`<div class="extra">⚠ ไม่มีเลขที่นั่ง: ${extra.join(', ')}</div>`:''}</div>`;
+  const n=Math.max(t.left.length+t.extraL.length,t.right.length+t.extraR.length);let g='';
+  const nm=x=>esc(x.name)+(x.tbc?' <span class="tbcp">TBC</span>':'');
+  const cell=(side,i)=>{
+    const col=side==='L'?t.left:t.right, ex=side==='L'?t.extraL:t.extraR;
+    let no,name,cls='';
+    if(i<col.length){const s=col[i],x=bySeat[s];no=s;name=x?nm(x):'ว่าง';if(!x)cls=' v';}
+    else if(i-col.length<ex.length){no='+';name=nm(ex[i-col.length]);cls=' x';}
+    else return '<div></div><div></div>';
+    const N=`<div class="nm ${side==='L'?'l':'r'}${cls}">${name}</div>`, B=`<div class="no${cls}"><b>${no}</b></div>`;
+    return side==='L'?N+B:B+N;
+  };
+  for(let i=0;i<n;i++) g+=cell('L',i)+(i===0?`<div class="tbl" style="grid-row:1/span ${t.rows};grid-column:3"></div>`:'')+cell('R',i);
+  const nx=t.extraL.length+t.extraR.length, all=[...t.left,...t.right];
+  return `<div class="lt"><h4>${title}<small>ที่ ${Math.min(...all)}–${Math.max(...all)} · ${t.cap} ที่นั่ง${nx?` + เสริม ${nx}`:''}</small></h4><div class="grid">${g}</div>${nx?`<div class="extra">+ = เก้าอี้เสริม รอโรงแรมเพิ่มที่นั่ง</div>`:''}</div>`;
 }
 // grid placement: left name col 1, left no col 2, table col 3, right no col 4, right name col 5 — rows auto-flow fill in order
 const fixGrid=root=>root.querySelectorAll('.lt .grid').forEach(gr=>{let row=1,col=1;
@@ -200,12 +207,12 @@ fixGrid(zz);
 /* ---------- 5. Guest list A–Z ---------- */
 const rows=[...D.guests].sort((a,b)=>a.name.localeCompare(b.name,'th'));
 function recTxt(g){const t=TBY[g.table];if(!t)return '<span class="flag">— ไม่มีในไฟล์งานเลี้ยง</span>';
-  const s=g.seats.length?g.seats.join(', '):'<span class="flag">ไม่มีเลข</span>';
+  const s=g.seats.length?g.seats.join(', '):'<span class="flag">เสริม (รอโรงแรม)</span>';
   return `Z${t.zone} · ${t.zone==='1'?t.label:'โต๊ะ '+Math.min(...t.left,...t.right)+'–'+Math.max(...t.left,...t.right)} · <b>${s}</b>`;}
 function cerTxt(g){if(!g.cer)return '–';const c=cerInfo(g.cer);return `${g.cer} <small style="color:var(--muted)">(${c.sideTh} แถว ${c.row})</small>`;}
 const per=40;
 for(let i=0;i<rows.length;i+=per*2){
-  const mk=arr=>`<table class="list"><thead><tr><th>ชื่อ</th><th>พิธี</th><th>งานเลี้ยง</th></tr></thead><tbody>${arr.map(g=>`<tr><td class="n">${esc(g.name)}${g.alias.length?`<br><small style="color:var(--muted)">พิธี: ${esc(g.alias.join(', '))}</small>`:''}</td><td class="c">${cerTxt(g)}</td><td>${recTxt(g)}</td></tr>`).join('')}</tbody></table>`;
+  const mk=arr=>`<table class="list"><thead><tr><th>ชื่อ</th><th>พิธี</th><th>งานเลี้ยง</th></tr></thead><tbody>${arr.map(g=>`<tr><td class="n">${esc(g.name)}${g.tbc?' <span class="tbcp">TBC</span>':''}${g.alias.length?`<br><small style="color:var(--muted)">พิธี: ${esc(g.alias.join(', '))}</small>`:''}</td><td class="c">${cerTxt(g)}</td><td>${recTxt(g)}</td></tr>`).join('')}</tbody></table>`;
   page('รายชื่อแขกทั้งหมด (เรียงตามชื่อ) · '+rows.length+' รายการ',`<div class="cols">${mk(rows.slice(i,i+per))}${mk(rows.slice(i+per,i+per*2))}</div>`);
 }
 
@@ -216,13 +223,13 @@ const cerOnly=D.guests.filter(g=>!g.table);
 const dupNames=Object.entries(D.guests.reduce((m,g)=>(m[g.name]=(m[g.name]||0)+1,m),{})).filter(([,n])=>n>1).map(([n])=>n);
 const aliasList=D.guests.filter(g=>g.alias.length);
 page('รายการที่ทีมต้องเช็กหน้างาน',`<div class="issues">
-  <h3>แขกที่ยังไม่มีเลขที่นั่งงานเลี้ยง (ชื่อเกินจำนวนที่นั่งของโต๊ะ)</h3>
+  <h3>เก้าอี้เสริม — รอโรงแรมเพิ่มเก้าอี้และอัปเดตเลขที่นั่ง</h3>
   <ul>${unseated.map(g=>`<li>${esc(g.name)} — Zone ${TBY[g.table].zone} · ${TBY[g.table].label}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
   <h3>ที่นั่งงานเลี้ยงที่ยังว่าง</h3><ul><li>${emptyRec.join(', ')||'ไม่มี'}</li></ul>
   <h3>ที่นั่งพิธีที่ยังว่าง</h3><ul><li>${emptyCer.join(', ')||'ไม่มี'}</li></ul>
-  <h3>ชื่อที่มีเฉพาะในผังพิธี (ไม่พบในไฟล์งานเลี้ยง)</h3><ul>${cerOnly.map(g=>`<li>${esc(g.name)} — ${g.cer}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
-  <h3>ชื่อซ้ำ (คนละที่นั่ง)</h3><ul>${dupNames.map(n=>`<li>${esc(n)} — ที่ ${D.guests.filter(g=>g.name===n).map(g=>g.seats.join(',')).join(' และ ')}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
-  <h3>ชื่อในผังพิธีที่เขียนต่างจากไฟล์งานเลี้ยง (จับคู่เป็นคนเดียวกัน)</h3><ul>${aliasList.map(g=>`<li>${esc(g.alias.join(', '))} → ${esc(g.name)} (${g.cer})</li>`).join('')}</ul>
+  <h3>ชื่อที่มีเฉพาะในผังพิธี (ไม่พบในไฟล์งานเลี้ยง) · รออัปเดต</h3><ul>${cerOnly.map(g=>`<li>${esc(g.name)} — ${g.cer}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
+  <h3>ชื่อซ้ำ (แยกเป็นคนละคน) · TBC รอบ่าวสาวยืนยัน</h3><ul>${dupNames.map(n=>`<li>${esc(n)} — ที่ ${D.guests.filter(g=>g.name===n).map(g=>g.seats.join(',')).join(' และ ')}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
+  <h3>ชื่อในผังพิธีที่เขียนต่างจากไฟล์งานเลี้ยง (จับคู่เป็นคนเดียวกันแล้ว)</h3><ul>${aliasList.map(g=>`<li>${esc(g.alias.join(', '))} → ${esc(g.name)} (${g.cer})</li>`).join('')}</ul>
 </div>`);
 </script>
 </body>

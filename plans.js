@@ -25,8 +25,17 @@ D.tables.forEach(t => {
   t.pitch = t.zone === '1' ? PITCH_Z1 : PITCH_Z;
   t.rows = Math.max(t.left.length, t.right.length);
   t.y2 = t.y1 + t.rows * t.pitch;
+  // extra chairs the hotel will add (guest listed in the file without a seat number)
+  t.extraL = D.guests.filter(g => g.table === t.id && g.extra === 'L');
+  t.extraR = D.guests.filter(g => g.table === t.id && g.extra === 'R');
+  t.yEnd = t.y1 + Math.max(t.left.length + t.extraL.length, t.right.length + t.extraR.length) * t.pitch;
   TBY[t.id] = t;
 });
+function extraPos(g){
+  const t = TBY[g.table], L = g.extra === 'L', arr = L ? t.extraL : t.extraR;
+  const i = (L ? t.left.length : t.right.length) + arr.indexOf(g);
+  return [t.x + (L ? -21 : 21), t.y1 + t.pitch/2 + i * t.pitch];
+}
 function seatPos(t, s){
   let i = t.left.indexOf(s), side = -1;
   if (i < 0){ i = t.right.indexOf(s); side = 1; }
@@ -37,7 +46,7 @@ function seatIndex(t, s){ const i = t.left.indexOf(s); return (i >= 0 ? i : t.ri
 function seatList(t){ return [...t.left, ...t.right]; }
 
 /* zone crops for the guest card */
-const VIEW = { '1':'0 0 700 880', '2':'355 888 340 285', '3':'25 888 340 285', all:'0 0 700 1200' };
+const VIEW = { '1':'0 0 700 880', '2':'355 897 340 276', '3':'25 888 340 285', all:'0 0 700 1200' };
 
 function lawn(svg){
   el('path', {d:'M412 0 L 6 880', class:'water'}, svg);
@@ -50,7 +59,7 @@ function buildVenue(opts = {}){
   // features across the water (from the planner's site plan)
   const feat = (x, y, w, label, th, cls='feat') => {
     el('rect', {x, y, width:w, height:34, rx:8, class:cls}, svg);
-    el('text', {x:x+w/2, y:y+15, class:'f-en'}, svg, label);
+    el('text', {x:x+w/2, y:y+(th?15:21), class:'f-en'}, svg, label);
     if (th) el('text', {x:x+w/2, y:y+27, class:'f-th'}, svg, th);
   };
   feat(70, 70, 128, 'Reception', 'ลงทะเบียน', 'feat entry');
@@ -58,6 +67,7 @@ function buildVenue(opts = {}){
   feat(150, 268, 92, 'Singer', 'นักร้อง');
   feat(28, 420, 100, 'Gallery', 'แกลเลอรี');
   el('text', {x:150, y:620, class:'water-lbl'}, svg, 'สระน้ำ & สะพานหิน');
+  feat(588, 862, 92, 'Bouquet');
   // stage
   el('rect', {x:480, y:42, width:120, height:56, rx:8, class:'stage'}, svg);
   el('text', {x:540, y:66, class:'st-en'}, svg, 'STAGE');
@@ -84,12 +94,18 @@ function drawTables(svg, opts){
   D.tables.forEach(t => {
     const g = el('g', {class:'tg', 'data-t':t.id}, svg);
     el('rect', {x:t.x-9, y:t.y1, width:18, height:t.y2-t.y1, rx:3, class:'tb'}, g);
-    el('rect', {x:t.x-33, y:t.y1-10, width:66, height:t.y2-t.y1+20, rx:12, class:'ring', style:'display:none'}, g);
+    el('rect', {x:t.x-33, y:t.y1-10, width:66, height:t.yEnd-t.y1+20, rx:12, class:'ring', style:'display:none'}, g);
+    for (const x of [...t.extraL, ...t.extraR]){
+      const [cx, cy] = extraPos(x);
+      el('circle', {cx, cy, r:7, class:'ch extra'}, g);
+      el('text', {x:cx, y:cy+0.5, class:'ch-n', style:'fill:#A8552F'}, g, '+');
+    }
+    const yl = t.yEnd;
     if (t.zone === '1'){
-      el('text', {x:t.x, y:t.y2+22, class:'tb-name'}, g, t.label);
-      el('text', {x:t.x, y:t.y2+37, class:'tb-sub'}, g, 'ที่ ' + Math.min(...seatList(t)) + '–' + Math.max(...seatList(t)));
+      el('text', {x:t.x, y:yl+22, class:'tb-name'}, g, t.label);
+      el('text', {x:t.x, y:yl+37, class:'tb-sub'}, g, 'ที่ ' + Math.min(...seatList(t)) + '–' + Math.max(...seatList(t)));
     } else {
-      el('text', {x:t.x, y:t.y2+20, class:'tb-sub'}, g, Math.min(...seatList(t)) + '–' + Math.max(...seatList(t)));
+      el('text', {x:t.x, y:yl+20, class:'tb-sub'}, g, Math.min(...seatList(t)) + '–' + Math.max(...seatList(t)));
     }
     for (const s of seatList(t)){
       const [x, y] = seatPos(t, s);
@@ -136,5 +152,5 @@ function buildCeremony(){
   return svg;
 }
 
-window.PLAN = { D, TBY, el, buildVenue, buildCeremony, seatPos, seatSide, seatIndex, seatList, cerPos, cerInfo, CER_CODES, VIEW };
+window.PLAN = { D, TBY, el, extraPos, buildVenue, buildCeremony, seatPos, seatSide, seatIndex, seatList, cerPos, cerInfo, CER_CODES, VIEW };
 })();
