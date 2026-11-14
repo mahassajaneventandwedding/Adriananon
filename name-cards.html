@@ -31,6 +31,9 @@ body{background:#E9E4DF;font-family:'Cormorant Garamond','Taviraj',serif;color:v
 .meta{position:relative;margin-top:2.2mm;font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:6.6pt;letter-spacing:.28em;color:var(--taupe);text-transform:uppercase}
 .seat{position:absolute;right:7mm;bottom:4.2mm;font-family:'Josefin Sans',sans-serif;font-size:5.6pt;letter-spacing:.12em;color:#B4A79B}
 .diet{position:absolute;left:7mm;bottom:3.8mm;font-family:'Josefin Sans',sans-serif;font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:#56683F;border:.2mm solid #A7B796;border-radius:3mm;padding:.4mm 2mm .2mm}
+.name.blank{width:62mm;height:14mm;border-bottom:.25mm dotted #CFC3B8;margin-top:3mm}
+.name.blank+.rule{display:none}
+.name.blank~.meta{margin-top:3.4mm}
 .seat.x{color:#C0703F}
 </style>
 </head>
@@ -50,7 +53,10 @@ D.guests.forEach(g=>{
   else cards.push({name:g.name,zone:T[g.table].zone,seat:null,key:Math.max(...T[g.table].left,...T[g.table].right)+0.5,extra:true});
 });
 cards.sort((a,b)=>a.key-b.key);
-document.getElementById('info').textContent=`${cards.length} ใบ · ${Math.ceil(cards.length/8)} หน้า`;
+/* ?blank → one page of 8 blank cards for writing names by hand on the day */
+const BLANK=new URLSearchParams(location.search).has('blank');
+if(BLANK){cards.length=0;for(let i=0;i<8;i++)cards.push({blank:true});}
+document.getElementById('info').innerHTML=BLANK?'การ์ดเปล่า 8 ใบ (เขียนชื่อเอง) · <a href="name-cards.html" style="color:#fff">กลับไปหน้าชื่อแขก</a>':`${cards.length} ใบ · ${Math.ceil(cards.length/8)} หน้า · <a href="?blank" style="color:#fff">การ์ดเปล่าสำหรับเขียนชื่อเอง →</a>`;
 const isThai=s=>/[฀-๿]/.test(s);
 const cut=`<svg class="cut" viewBox="0 0 95 64" preserveAspectRatio="none"><polygon class="o" points="6,0 89,0 95,6 95,58 89,64 6,64 0,58 0,6"/><polygon class="i" points="8,2.2 87,2.2 92.8,8 92.8,56 87,61.8 8,61.8 2.2,56 2.2,8"/></svg>`;
 const pages=document.getElementById('pages');
@@ -58,11 +64,11 @@ for(let i=0;i<cards.length;i+=8){
   const pg=document.createElement('section');pg.className='page';
   pg.innerHTML=cards.slice(i,i+8).map(c=>`<div class="cell"><div class="card">${cut}
     <img class="logo" src="img/couple-logo-taupe.png" alt="Adriana & Non">
-    <div class="name${isThai(c.name)?' th':''}">${esc(c.name)}</div>
+    ${c.blank?'<div class="name blank"></div>':`<div class="name${isThai(c.name)?' th':''}">${esc(c.name)}</div>`}
     <div class="rule"></div>
     <div class="meta">15 · 11 · 2026 · Thames Valley Khao Yai</div>
     ${c.diet?`<div class="diet">${c.diet}</div>`:''}
-    <div class="seat${c.extra?' x':''}">${c.extra?'Z'+c.zone+' · เสริม':'Z'+c.zone+' · '+c.seat}</div>
+    ${c.blank?'':`<div class="seat${c.extra?' x':''}">${c.extra?'Z'+c.zone+' · เสริม':'Z'+c.zone+' · '+c.seat}</div>`}
   </div></div>`).join('');
   pages.appendChild(pg);
 }
