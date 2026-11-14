@@ -53,7 +53,7 @@ body{font-family:'Prompt',sans-serif;font-weight:300;color:var(--ink);background
 .cer .ai{display:flex;align-items:center;justify-content:center;border-left:1px dashed var(--mauve-deep);border-right:1px dashed var(--mauve-deep);font-family:'Josefin Sans';font-size:10px;color:var(--mauve-deep)}
 .cs{border:1px solid var(--line);border-radius:7px;min-height:26mm;padding:4px 3px;text-align:center;background:#FBF5F6;display:flex;flex-direction:column;justify-content:center}
 .cs i{font-style:normal;font-family:'Josefin Sans';font-size:8.5px;color:var(--mauve-deep);letter-spacing:.06em}
-.cs span{font-size:8.8px;line-height:1.25;color:var(--plum);word-break:normal;overflow-wrap:anywhere}
+.cs span{font-size:8px;line-height:1.25;color:var(--plum);word-break:normal;overflow-wrap:normal;letter-spacing:-.01em}
 .cs.v{background:#fff;border-style:dashed}
 .cs.v span{color:#C9BABD}
 .side-h{display:grid;grid-template-columns:9mm 1fr 9mm 1fr;margin-top:5mm;font-size:10.5px;color:var(--plum);text-align:center}
@@ -168,7 +168,7 @@ page('ผังที่นั่งพิธีแลกคำมั่นส�
   <div class="stage"><b>STAGE</b><small>เวทีบ่าวสาว</small></div>
   <div class="side-h"><span></span><span>ฝั่งซ้าย<small>Left · L01 (ริมนอก) → L06 (ติดทางเดิน)</small></span><span></span><span>ฝั่งขวา<small>Right · R01 (ติดทางเดิน) → R06 (ริมนอก)</small></span></div>
   <div class="cer">${cg}</div>
-  <div class="note">ทางเดินบ่าวสาวอยู่ตรงกลางระหว่างฝั่งซ้ายและขวา · แขกที่ไม่มีชื่อในผังพิธี นั่งได้อิสระในที่นั่งว่าง · ข้อมูลจากไฟล์ seat.xlsx (${cerCount} ชื่อ จาก ${CER_CODES.length} ที่นั่ง)</div>`);
+  <div class="note">ทางเดินบ่าวสาวอยู่ตรงกลางระหว่างฝั่งซ้ายและขวา · แขกที่ไม่มีชื่อในผังพิธี นั่งได้อิสระในที่นั่งว่าง · ข้อมูลจากไฟล์ seatupdate.xlsx (${cerCount} ชื่อ จาก ${CER_CODES.length} ที่นั่ง)</div>`);
 
 /* ---------- long-table renderer ---------- */
 function ltHTML(t,title){
