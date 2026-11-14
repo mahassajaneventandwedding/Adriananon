@@ -95,6 +95,7 @@ function drawTables(svg, opts){
     const g = el('g', {class:'tg', 'data-t':t.id}, svg);
     el('rect', {x:t.x-9, y:t.y1, width:18, height:t.y2-t.y1, rx:3, class:'tb'}, g);
     el('rect', {x:t.x-33, y:t.y1-10, width:66, height:t.yEnd-t.y1+20, rx:12, class:'ring', style:'display:none'}, g);
+    if (t.yEnd > t.y2) el('rect', {x:t.x-9, y:t.y2, width:18, height:t.yEnd-t.y2, rx:3, class:'tb ext'}, g);
     for (const x of [...t.extraL, ...t.extraR]){
       const [cx, cy] = extraPos(x);
       el('circle', {cx, cy, r:7, class:'ch extra'}, g);
