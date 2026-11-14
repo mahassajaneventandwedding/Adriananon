@@ -225,7 +225,7 @@ const cerOnly=D.guests.filter(g=>!g.table);
 const dupNames=Object.entries(D.guests.reduce((m,g)=>(m[g.name]=(m[g.name]||0)+1,m),{})).filter(([,n])=>n>1).map(([n])=>n);
 const aliasList=D.guests.filter(g=>g.alias.length);
 page('รายการที่ทีมต้องเช็กหน้างาน',`<div class="issues">
-  <h3>ที่นั่งเสริมหัวโต๊ะ — เจ้าบ่าวแจ้งโรงแรมเพิ่ม 2 โต๊ะ (Zone 1 แถว 2 และ Zone 2 โต๊ะ 97–102)</h3>
+  <h3>ที่นั่งเสริมหัวโต๊ะ (แจ้งโรงแรมเพิ่มแล้ว)</h3>
   <ul>${unseated.map(g=>`<li>${esc(g.name)} — Zone ${TBY[g.table].zone} · ${TBY[g.table].label}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
   <h3>อาหารพิเศษ</h3><ul>${D.guests.filter(g=>g.diet).map(g=>`<li>${esc(g.name)} — ${g.diet} · Zone ${TBY[g.table].zone} ${TBY[g.table].label} · ที่ ${g.seats.join(', ')}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
   <h3>ที่นั่งงานเลี้ยงที่ยังว่าง</h3><ul><li>${emptyRec.join(', ')||'ไม่มี'}</li></ul>
