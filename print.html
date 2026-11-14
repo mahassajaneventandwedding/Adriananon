@@ -75,6 +75,7 @@ body{font-family:'Prompt',sans-serif;font-weight:300;color:var(--ink);background
 .lt .no.v b{background:#fff;border:1px dashed #D5C3C7;color:#B9AAAD}
 .lt .nm.x{color:#9A4E27;font-weight:400}
 .lt .no.x b{background:#FBEDE4;border:1px dashed #C8734A;color:#A8552F}
+.veg{font-family:'Josefin Sans';font-size:7px;letter-spacing:.06em;color:#56683F;border:1px solid #A7B796;border-radius:6px;padding:0 3px;background:#F2F6EE}
 .tbcp{font-family:'Josefin Sans';font-size:7.5px;color:#9A4E27;border:1px solid #EBC3A8;border-radius:6px;padding:0 3px;background:#FFF4EC}
 .lt .tbl{background:#F4ECEE;border:1px solid #D7C3C8;border-radius:3px}
 .lt .extra{font-size:9px;color:#A8552F;margin-top:3px;text-align:center}
@@ -171,7 +172,7 @@ page('ผังที่นั่งพิธีแลกคำมั่นส�
 /* ---------- long-table renderer ---------- */
 function ltHTML(t,title){
   const n=Math.max(t.left.length+t.extraL.length,t.right.length+t.extraR.length);let g='';
-  const nm=x=>esc(x.name)+(x.tbc?' <span class="tbcp">TBC</span>':'');
+  const nm=x=>esc(x.name)+(x.tbc?' <span class="tbcp">TBC</span>':'')+(x.diet?' <span class="veg">VEGAN</span>':'');
   const cell=(side,i)=>{
     const col=side==='L'?t.left:t.right, ex=side==='L'?t.extraL:t.extraR;
     let no,name,cls='';
@@ -212,7 +213,7 @@ function recTxt(g){const t=TBY[g.table];if(!t)return '<span class="flag">— ไ
 function cerTxt(g){if(!g.cer)return '–';const c=cerInfo(g.cer);return `${g.cer} <small style="color:var(--muted)">(${c.sideTh} แถว ${c.row})</small>`;}
 const per=40;
 for(let i=0;i<rows.length;i+=per*2){
-  const mk=arr=>`<table class="list"><thead><tr><th>ชื่อ</th><th>พิธี</th><th>งานเลี้ยง</th></tr></thead><tbody>${arr.map(g=>`<tr><td class="n">${esc(g.name)}${g.tbc?' <span class="tbcp">TBC</span>':''}${g.alias.length?`<br><small style="color:var(--muted)">พิธี: ${esc(g.alias.join(', '))}</small>`:''}</td><td class="c">${cerTxt(g)}</td><td>${recTxt(g)}</td></tr>`).join('')}</tbody></table>`;
+  const mk=arr=>`<table class="list"><thead><tr><th>ชื่อ</th><th>พิธี</th><th>งานเลี้ยง</th></tr></thead><tbody>${arr.map(g=>`<tr><td class="n">${esc(g.name)}${g.tbc?' <span class="tbcp">TBC</span>':''}${g.diet?' <span class="veg">VEGAN</span>':''}${g.alias.length?`<br><small style="color:var(--muted)">พิธี: ${esc(g.alias.join(', '))}</small>`:''}</td><td class="c">${cerTxt(g)}</td><td>${recTxt(g)}</td></tr>`).join('')}</tbody></table>`;
   page('รายชื่อแขกทั้งหมด (เรียงตามชื่อ) · '+rows.length+' รายการ',`<div class="cols">${mk(rows.slice(i,i+per))}${mk(rows.slice(i+per,i+per*2))}</div>`);
 }
 
@@ -225,6 +226,7 @@ const aliasList=D.guests.filter(g=>g.alias.length);
 page('รายการที่ทีมต้องเช็กหน้างาน',`<div class="issues">
   <h3>เก้าอี้เสริม — รอโรงแรมเพิ่มเก้าอี้และอัปเดตเลขที่นั่ง</h3>
   <ul>${unseated.map(g=>`<li>${esc(g.name)} — Zone ${TBY[g.table].zone} · ${TBY[g.table].label}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
+  <h3>อาหารพิเศษ</h3><ul>${D.guests.filter(g=>g.diet).map(g=>`<li>${esc(g.name)} — ${g.diet} · Zone ${TBY[g.table].zone} ${TBY[g.table].label} · ที่ ${g.seats.join(', ')}</li>`).join('')||'<li>ไม่มี</li>'}</ul>
   <h3>ที่นั่งงานเลี้ยงที่ยังว่าง</h3><ul><li>${emptyRec.join(', ')||'ไม่มี'}</li></ul>
   <h3>ที่นั่งพิธีที่ยังว่าง</h3><ul><li>${emptyCer.join(', ')||'ไม่มี'}</li></ul>
   <h3>ชื่อที่มีเฉพาะในผังพิธี (ไม่พบในไฟล์งานเลี้ยง) · รออัปเดต</h3><ul>${cerOnly.map(g=>`<li>${esc(g.name)} — ${g.cer}</li>`).join('')||'<li>ไม่มี</li>'}</ul>

@@ -295,6 +295,7 @@ footer p{font-size:12.5px;opacity:.92;margin-top:22px;line-height:1.7}
         </div>
         <div class="seat-desc" id="r-desc"></div>
         <div class="pending" id="r-pending">ที่นั่งเสริม · รอโรงแรมอัปเดตเลขที่นั่ง<br><small>Extra seat — the hotel will confirm your seat number.</small></div>
+        <div class="pending" id="r-diet" style="border-color:#A7B796;background:#F2F6EE;color:#56683F">🌱 เมนูอาหาร Vegan · Your vegan meal is noted</div>
         <div class="pending" id="r-tbc">ชื่อนี้มีมากกว่า 1 ท่าน · TBC รอบ่าวสาวยืนยันอีกครั้ง</div>
       </div>
       <div class="staff-note" id="r-note"></div>
@@ -582,7 +583,7 @@ function show(g){
     $('r-row').textContent=t.zone==='1'?t.label.replace('แถว ',''):'';
     const st=seatText(g.seats);
     $('r-seat-chip').style.display=(st||g.extra)?'':'none';$('r-seat').textContent=st||'เสริม';$('r-seat').style.fontSize=(st.length>5||!st)?'18px':'';
-    $('r-pending').style.display=g.extra?'block':'none';$('r-tbc').style.display=g.tbc?'block':'none';
+    $('r-pending').style.display=g.extra?'block':'none';$('r-diet').style.display=g.diet?'block':'none';$('r-tbc').style.display=g.tbc?'block':'none';
     let d;
     if(g.extra){const side=g.extra==='L'?'ซ้าย':'ขวา';d=t.zone==='1'?`โต๊ะยาว ${t.label} บนสนามหญ้า · ฝั่ง${side} (เมื่อหันหน้าเข้าเวที) เก้าอี้เสริมท้ายโต๊ะ`:`Zone ${t.zone} · ${t.label} · เก้าอี้เสริมฝั่ง${side}`;}
     else if(!g.seats.length) d='ยังไม่ได้ระบุเลขที่นั่ง ทีมงานจะพาไปที่นั่งหน้างานค่ะ';
@@ -597,7 +598,7 @@ function show(g){
     if(g.extra){const[x,y]=extraPos(g);el('circle',{cx:x,cy:y,r:7,class:'pulse'},meR);el('circle',{cx:x,cy:y,r:8,class:'me-seat'},meR);el('text',{x,y:y+0.5,class:'ch-n',style:'fill:#fff;font-size:8px'},meR,'+');}
   }
   const note=$('r-note');
-  if(STAFF){const n=[];if(g.extra)n.push('เก้าอี้เสริม รอโรงแรมเพิ่มที่นั่ง');if(!t)n.push('มีชื่อเฉพาะในผังพิธี ไม่พบในไฟล์งานเลี้ยง');if(g.alias.length)n.push('ชื่อในผังพิธี: '+g.alias.join(', '));
+  if(STAFF){const n=[];if(g.extra)n.push('เก้าอี้เสริม รอโรงแรมเพิ่มที่นั่ง');if(g.diet)n.push('อาหาร: '+g.diet);if(!t)n.push('มีชื่อเฉพาะในผังพิธี ไม่พบในไฟล์งานเลี้ยง');if(g.alias.length)n.push('ชื่อในผังพิธี: '+g.alias.join(', '));
     note.style.display=n.length?'block':'none';note.textContent='สำหรับทีมงาน · '+n.join(' · ');}else note.style.display='none';
 
   /* mates */
